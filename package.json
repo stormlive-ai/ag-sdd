@@ -1,5 +1,5 @@
 {
-  "name": "@storm-ai/ag-sdd",
+  "name": "ag-sdd",
   "version": "0.1.0",
   "description": "Spec-Driven Development (SDD) workflow harness and skill suite built specifically for Anti-Gravity.",
   "type": "module",
