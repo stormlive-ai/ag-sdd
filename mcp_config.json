@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "ag-sdd-sqlite": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sqlite"],
+      "disabled": true,
+      "autoApprove": []
+    }
+  }
+}

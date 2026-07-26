@@ -1,0 +1,30 @@
+# Node dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment & local secrets
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Spec execution test directories
+.specs/
+.agent/
+.agents/
+hooks/boundary-guard.mjs
+hooks.json
+plugin.json
+skills.json
+
+# Build output & caches
+dist/
+build/
+*.tgz
+*.log

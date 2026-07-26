@@ -1,0 +1,54 @@
+{
+  "name": "@storm-ai/ag-sdd",
+  "version": "0.1.0",
+  "description": "Spec-Driven Development (SDD) workflow harness and skill suite built specifically for Anti-Gravity.",
+  "type": "module",
+  "main": "./src/index.mjs",
+  "bin": {
+    "ag-sdd": "bin/cli.mjs"
+  },
+  "scripts": {
+    "start": "node ./bin/cli.mjs",
+    "lint": "eslint . --ext .mjs,.js",
+    "test": "node --test ./tests/**/*.test.mjs",
+    "verify": "node ./bin/cli.mjs verify"
+  },
+  "keywords": [
+    "anti-gravity",
+    "sdd",
+    "spec-driven-development",
+    "agentic",
+    "ai-workflow",
+    "code-generation",
+    "task-decomposition",
+    "boundary-isolation",
+    "clarification-gate",
+    "context-propagation"
+  ],
+  "author": "AG-SDD Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stormlive-ai/ag-sdd.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "rules/",
+    "templates/",
+    "workflows/",
+    "hooks/",
+    "plugin.json",
+    "mcp_config.json",
+    "skills.json",
+    "skills/",
+    "AGENTS.md",
+    "README.md",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "CHANGELOG.md"
+  ]
+}

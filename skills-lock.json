@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "ag-sdd": {
+      "source": "stormlive-ai/ag-sdd",
+      "sourceType": "github",
+      "skillPath": "skills/ag-sdd/SKILL.md",
+      "computedHash": "3002b1b73dc5973ffe93d5f15b588a4ffab799a09b7a84228c880b286fad0533"
+    }
+  }
+}
