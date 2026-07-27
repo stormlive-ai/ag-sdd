@@ -26,7 +26,7 @@ const c = {
   bgGreen: '\x1b[42m',
 };
 
-const VERSION = '0.1.1';
+const VERSION = '0.2.0';
 
 function getPackageVersion() {
   try {
@@ -169,8 +169,9 @@ function cmdInit(flags) {
     console.log(`  ${c.dim}✓ .specs/ directory already exists${c.reset}`);
   }
 
-  // Copy AGENTS.md
-  const srcAgents = path.join(PKG_ROOT, 'AGENTS.md');
+  // Copy AGENTS.md — prefer lean project template over full package AGENTS.md
+  const projectAgentsTemplate = path.join(PKG_ROOT, 'templates', 'AGENTS.project.md');
+  const srcAgents = fs.existsSync(projectAgentsTemplate) ? projectAgentsTemplate : path.join(PKG_ROOT, 'AGENTS.md');
   const destAgents = path.join(CWD, 'AGENTS.md');
   safeCopy(srcAgents, destAgents, flags.force);
 
@@ -199,6 +200,41 @@ function cmdInit(flags) {
     }
   }
 
+  // Copy skill to .agents/skills/ag-sdd/
+  let srcSkillDir = path.join(PKG_ROOT, 'skills', 'ag-sdd');
+  if (!fs.existsSync(srcSkillDir)) {
+    srcSkillDir = path.join(PKG_ROOT, 'templates', 'skills', 'ag-sdd');
+  }
+  if (fs.existsSync(srcSkillDir)) {
+    const destSkillDir = path.join(CWD, '.agents', 'skills', 'ag-sdd');
+    fs.mkdirSync(destSkillDir, { recursive: true });
+    safeCopy(path.join(srcSkillDir, 'SKILL.md'), path.join(destSkillDir, 'SKILL.md'), flags.force);
+    const srcRefs = path.join(srcSkillDir, 'references');
+    if (fs.existsSync(srcRefs)) {
+      const destRefs = path.join(destSkillDir, 'references');
+      fs.mkdirSync(destRefs, { recursive: true });
+      for (const file of fs.readdirSync(srcRefs)) {
+        safeCopy(path.join(srcRefs, file), path.join(destRefs, file), flags.force);
+      }
+    }
+  }
+
+  // Create steering directory for persistent project context
+  const steeringDir = path.join(CWD, '.specs', '.steering');
+  if (!fs.existsSync(steeringDir)) {
+    fs.mkdirSync(steeringDir, { recursive: true });
+    // Create initial steering files
+    const steeringFiles = {
+      'stack.md': '# Project Stack\n\n<!-- Auto-populated by ag-sdd. Edit to reflect your project. -->\n\n## Languages & Frameworks\n- \n\n## Build & Test\n- \n\n## Key Dependencies\n- \n',
+      'conventions.md': '# Project Conventions\n\n<!-- Auto-populated by ag-sdd. Edit to reflect your project. -->\n\n## Coding Style\n- \n\n## File Organization\n- \n\n## Naming Conventions\n- \n',
+      'decisions.md': '# Architectural Decisions\n\n<!-- Accumulated by ag-sdd across feature specs. -->\n\n## Decisions Log\n\n<!-- Each entry is appended by the architect during discovery. -->\n'
+    };
+    for (const [file, content] of Object.entries(steeringFiles)) {
+      fs.writeFileSync(path.join(steeringDir, file), content);
+      console.log(`  ${c.green}✓ Created${c.reset} .specs/.steering/${file}`);
+    }
+  }
+
   // Copy boundary guard hook & hooks.json
   const srcHookScript = path.join(PKG_ROOT, 'hooks', 'boundary-guard.mjs');
   if (fs.existsSync(srcHookScript)) {
@@ -219,9 +255,8 @@ function cmdInit(flags) {
     safeCopy(srcSkillsJson, path.join(CWD, 'skills.json'), flags.force);
   }
 
-  console.log(`\n${c.cyan}✨ Initialization complete. Next steps:${c.reset}`);
-  console.log(`  1. Review AGENTS.md`);
-  console.log(`  2. Type '@sdd-discovery <description>' or run 'ag-sdd new <feature-name>'`);
+  console.log(`\n${c.cyan}✨ Initialization complete!${c.reset}`);
+  console.log(`\n${c.bold}Next step:${c.reset} Run ${c.green}npx ag-sdd new <feature-name>${c.reset} to create your first spec.`);
 }
 
 function cmdNew(args, flags) {
@@ -244,14 +279,14 @@ function cmdNew(args, flags) {
   fs.mkdirSync(featureDir, { recursive: true });
   console.log(`${c.bold}Creating new feature spec: ${c.cyan}${featureName}${c.reset}\n`);
 
-  const files = fs.readdirSync(templatesDir);
+  const specFiles = ['00_research.md', '01_requirements.md', '02_design.md', '03_tasks.md', '04_signoff.md'];
   let copied = 0;
 
-  for (const file of files) {
+  for (const file of specFiles) {
     const srcPath = path.join(templatesDir, file);
     const destPath = path.join(featureDir, file);
     
-    if (fs.statSync(srcPath).isFile()) {
+    if (fs.existsSync(srcPath)) {
       const content = fs.readFileSync(srcPath, 'utf8');
       const replaced = content.replace(/\{\{FEATURE_NAME\}\}/g, featureName);
       fs.writeFileSync(destPath, replaced);
@@ -264,7 +299,8 @@ function cmdNew(args, flags) {
     console.log(`  ${c.yellow}⚠️  No templates found in ${templatesDir}${c.reset}`);
   }
 
-  console.log(`\n${c.cyan}✨ Feature '${featureName}' created. Open .specs/${featureName}/ to edit.${c.reset}`);
+  console.log(`\n${c.cyan}✨ Feature '${featureName}' created!${c.reset}`);
+  console.log(`\n${c.bold}Next step:${c.reset} Run ${c.green}@sdd-discovery${c.reset} in Antigravity chat, or manually edit ${c.cyan}.specs/${featureName}/${c.reset}`);
 }
 
 function parseTasks(content) {
@@ -376,13 +412,10 @@ function cmdStatus() {
       total = tasks.length;
       done = tasks.filter(t => t.done).length;
       
-      // Basic heuristic: if some dependencies are done but not the task itself, it might be in progress
-      // But for simplicity, we'll just consider tasks with '●' or if any task is checked it's partially done.
-      // We'll leave inProgress as 0 unless we parse a specific symbol.
-      // We'll stick to remaining = total - done
+      inProgress = tasks.filter(t => t.inProgress).length;
     }
 
-    const remaining = total - done;
+    const remaining = total - done - inProgress;
     const percent = total === 0 ? 0 : Math.round((done / total) * 100);
     
     totalTasks += total;
@@ -397,6 +430,7 @@ function cmdStatus() {
   console.log('');
   const overallPercent = totalTasks === 0 ? 0 : Math.round((totalDone / totalTasks) * 100);
   console.log(`${c.bold}Overall Summary:${c.reset} ${totalDone}/${totalTasks} tasks complete (${overallPercent}%)`);
+  console.log(`\n${c.dim}💡 Run ${c.reset}${c.green}npx ag-sdd next${c.reset}${c.dim} to find executable tasks.${c.reset}`);
 }
 
 function cmdNext() {
@@ -468,6 +502,9 @@ function cmdNext() {
 
   if (!foundNext) {
     console.log(`  ${c.green}🎉 All tasks complete or no executable tasks found!${c.reset}`);
+  }
+  if (foundNext) {
+    console.log(`${c.dim}💡 Run ${c.reset}${c.green}npx ag-sdd start <feature> <task>${c.reset}${c.dim} to begin.${c.reset}`);
   }
 }
 
@@ -670,6 +707,7 @@ function cmdStart(args) {
   if (task.boundary) {
     console.log(`  ${c.dim}Boundary:${c.reset} ${task.boundary}`);
   }
+  console.log(`\n${c.bold}Next:${c.reset} Implement within boundary. When done: ${c.green}npx ag-sdd complete ${feature} ${taskSel} --note "..."${c.reset}`);
 }
 
 function cmdComplete(args, flags) {
@@ -680,6 +718,7 @@ function cmdComplete(args, flags) {
   }
   const task = updateTaskStatus(feature, taskSel, 'x', flags.note);
   console.log(`  ${c.green}✓ Completed task${c.reset} [${feature}]: "${task.title}"`);
+  console.log(`\n${c.bold}Next:${c.reset} Run ${c.green}npx ag-sdd next${c.reset} to find the next executable task.`);
 }
 
 function cmdReset(args) {
@@ -779,11 +818,23 @@ function cmdLinter(args) {
   const reqFile = path.join(featureDir, '01_requirements.md');
   if (fs.existsSync(reqFile)) {
     const reqContent = fs.readFileSync(reqFile, 'utf8');
-    const earsKeywords = ['shall', 'when', 'while', 'where', 'if'];
+    // Count only lines that start with EARS patterns (requirement list items)
+    const earsPatterns = [
+      /^-\s+(?:The\s+(?:system|application|service|module)\s+shall\b)/im,  // Ubiquitous
+      /^-\s+When\s+/m,   // Event-driven
+      /^-\s+While\s+/m,  // State-driven  
+      /^-\s+Where\s+/m,  // Optional feature
+      /^-\s+If\s+/m,     // Unwanted behavior
+    ];
     let earsCount = 0;
-    for (const kw of earsKeywords) {
-      const matches = reqContent.match(new RegExp(`\\b${kw}\\b`, 'gi'));
-      if (matches) earsCount += matches.length;
+    const reqLines = reqContent.split('\n');
+    for (const line of reqLines) {
+      for (const pattern of earsPatterns) {
+        if (pattern.test(line)) {
+          earsCount++;
+          break;
+        }
+      }
     }
     if (earsCount < 3) {
       console.log(`  ${c.yellow}⚠️  01_requirements.md has weak EARS syntax usage (found ${earsCount} clauses)${c.reset}`);

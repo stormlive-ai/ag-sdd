@@ -7,9 +7,6 @@ description: >-
   4-phase SDD lifecycle: Discovery, Spec Generation, Sequential Execution, 
   and Quality Signoff.
 ---
-
-# Anti-Gravity Spec-Driven Development (ag-sdd)
-
 You are operating in a workspace that enforces **Spec-Driven Development**. 
 No code is written until a specification exists, has been decomposed into 
 atomic tasks, and you have passed a clarification gate.
@@ -32,13 +29,34 @@ You must use the `ag-sdd` CLI to navigate the workflow:
 - `npx ag-sdd start <feature> <task>`: Marks a task in-progress `[/]`.
 - `npx ag-sdd complete <feature> <task> --note "..."`: Marks task complete `[x]` and logs structured notes.
 - `npx ag-sdd linter <feature>`: Validates spec structure and EARS syntax.
+- `npx ag-sdd active`: Shows currently in-progress tasks and their boundaries.
 
 ## Subagent Model Tier Selection
 
 When spawning subagents for SDD phases via `invoke_subagent`:
-- **`sdd-architect`**: Use `pro` model tier for deep architectural reasoning and 100+ task decomposition.
-- **`sdd-executor`**: Use `flash` or `flash_lite` (nano) model tier for fast, low-latency single-task boundary execution.
-- **`sdd-reviewer`**: Use `pro` model tier for comprehensive quality audit and git diff review.
+- **`sdd-architect`**: Use `inherit` (Gemini Flash is sufficient for question formulation and spec generation).
+- **`sdd-executor`**: Use `inherit` (Flash excels at bounded single-task execution).
+- **`sdd-reviewer`**: Use `inherit` (Flash can run verification commands and audit diffs).
+
+Escalate to `pro` only when:
+- Feature complexity exceeds 50+ tasks (architect needs deeper reasoning)
+- Cross-module architectural reviews (reviewer needs wider context)
+
+## Antigravity Tool Integration
+
+Leverage the full Antigravity tool suite during SDD phases:
+- **`generate_image`**: Create UI mockups during Phase 2, generate visual assets during Phase 3.
+- **`search_web`**: Research libraries, APIs, and best practices during Phase 1 and Phase 2.
+- **`define_subagent`**: For complex features (50+ tasks), create specialized subagents with narrow scope.
+- **`schedule`**: Set check-in timers for long-running verification commands during Phase 3.
+- **`ask_question`**: Present discovery questions with selectable options during Phase 1.
+
+## Context Hygiene Protocol
+
+To prevent context window degradation during long task sequences:
+- Before each task, read ONLY: the task's A-C-E metadata, previous 2–3 implementation notes, and relevant design sections.
+- Do NOT re-read the full requirements or complete task list each turn.
+- Use `npx ag-sdd notes` to efficiently retrieve accumulated context.
 
 ## Execution Rules (Phase 3)
 

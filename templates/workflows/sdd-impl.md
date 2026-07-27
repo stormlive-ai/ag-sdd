@@ -1,5 +1,3 @@
-# @sdd-impl Workflow — Phase 3 Sequential Execution Loop
-
 Use this workflow to execute tasks from `.specs/<feature-name>/03_tasks.md` sequentially.
 
 ## Execution Protocol
@@ -14,9 +12,11 @@ Use this workflow to execute tasks from `.specs/<feature-name>/03_tasks.md` sequ
 
 3. **Execute Task**:
    - Implement code changes strictly within declared boundary files.
+   - For UI tasks, use `generate_image` to create visual assets instead of placeholders.
 
 4. **Empirical Verification**:
    - Run the exact command listed under `_Verification:_`.
+   - If the command takes >30 seconds, use the `schedule` tool to set a check-in timer rather than blocking.
    - Output must demonstrate clean success.
 
 5. **Log Notes & Complete**:
@@ -24,3 +24,12 @@ Use this workflow to execute tasks from `.specs/<feature-name>/03_tasks.md` sequ
 
 6. **Yield**:
    - Pause execution and yield control to the user before starting the next task.
+   - Tell the user: "Task N complete. Run `npx ag-sdd next` to see what's next."
+
+## Next-Step Guidance
+
+After each task completion, always show:
+```
+✅ Task N complete. 
+Next: Run `npx ag-sdd next` to find the next executable task.
+```

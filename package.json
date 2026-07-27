@@ -1,9 +1,8 @@
 {
   "name": "ag-sdd",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Spec-Driven Development (SDD) workflow harness and skill suite built specifically for Anti-Gravity.",
   "type": "module",
-  "main": "./src/index.mjs",
   "bin": {
     "ag-sdd": "bin/cli.mjs"
   },
@@ -36,7 +35,6 @@
   },
   "files": [
     "bin/",
-    "src/",
     "rules/",
     "templates/",
     "workflows/",
