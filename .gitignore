@@ -18,10 +18,6 @@ Thumbs.db
 .specs/
 .agent/
 .agents/
-hooks/boundary-guard.mjs
-hooks.json
-plugin.json
-skills.json
 
 # Build output & caches
 dist/

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://antigravity.google/schemas/skills.json",
+  "name": "ag-sdd",
+  "version": "0.2.0",
+  "description": "Production-grade Spec-Driven Development workflow harness and skill suite for Anti-Gravity",
+  "skills": [
+    {
+      "name": "ag-sdd",
+      "path": "./skills/ag-sdd/SKILL.md",
+      "description": "Activates the Anti-Gravity Spec-Driven Development (ag-sdd) workflow. Enforces Discovery, Spec Gen, Execution, and Signoff."
+    }
+  ]
+}

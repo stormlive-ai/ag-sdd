@@ -12,13 +12,11 @@
 > 
 > Eliminates the two primary failure modes of AI coding agents:
 > 1. **Thin Thinking**: Shallow, 3-task plans that collapse on complex features.
-> 2. **Boundary Violations**: Agents modifying unlisted files outside the task scope.
+> 2. **Boundary Violations**: Agents modifying unlisted files outside declared task scope.
 
 ---
 
-## 🚀 Step-by-Step Beginner Guide
-
-Welcome to `ag-sdd`! This section walks you through initializing a project and executing your first spec-driven feature step-by-step.
+## 🚀 Quick Start Guide: Automated vs Manual Workflows
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────┐
@@ -33,133 +31,129 @@ Welcome to `ag-sdd`! This section walks you through initializing a project and e
 └──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Step 1: Install & Initialize `ag-sdd` in Your Repository
+---
 
-Open a terminal inside your project directory and run:
+### ⚡ Path A: The Automated Agent Path (Recommended & Easiest)
 
+Once `@ag-sdd` is installed, **your AI Agent handles all CLI execution, task tracking, and boundary enforcement automatically behind the scenes**! You simply direct the agent using `@` mentions.
+
+#### Step 1: Install `@ag-sdd`
+
+In your chat or terminal, install the skill globally:
 ```bash
-# Option A: Install skill globally for all projects on your machine (Recommended)
 npx ag-sdd init --global
-
-# Option B: Initialize ag-sdd locally inside your current workspace
-npx ag-sdd init
 ```
 
-**What happens:**
-- Scaffolds `.specs/` and persistent steering context (`.specs/.steering/stack.md`, `conventions.md`, `decisions.md`).
-- Copies local subagent definitions (`sdd-architect`, `sdd-executor`, `sdd-reviewer`) to `.agents/agents/`.
-- Installs the `@ag-sdd` skill into `.agents/skills/ag-sdd/`.
-- Registers the runtime system boundary guard (`hooks/boundary-guard.mjs`).
+#### Step 2: Start Discovery (`@sdd-discovery`)
 
----
-
-### Step 2: Create a New Feature Spec
-
-When starting a new feature (e.g., `user-authentication`), run:
-
-```bash
-npx ag-sdd new user-authentication
-```
-
-This creates a dedicated spec folder inside `.specs/user-authentication/`:
-```
-.specs/user-authentication/
-├── 00_research.md      # Spike evaluation & prior art comparison
-├── 01_requirements.md  # Formal EARS syntax requirements
-├── 02_design.md        # Mermaid diagrams, schemas, file boundary plans
-├── 03_tasks.md         # Atomic A-C-E task breakdown (50-100+ tasks)
-└── 04_signoff.md       # Final QA signoff report
-```
-
----
-
-### Step 3: Run Phase 1 Discovery (`@sdd-discovery`)
-
-In your Antigravity (AGY), Cursor, Windsurf, or Agentic Chat interface, mention `@sdd-discovery`:
-
+In your Antigravity (AGY), Cursor, or IDE chat, tell the agent what you want to build:
 ```text
-@sdd-discovery I want to add JWT user authentication with Refresh Tokens and Rate Limiting.
+@sdd-discovery Add JWT user authentication with Refresh Tokens and Rate Limiting.
 ```
+**What the Agent does automatically:**
+- Scans `package.json`, existing APIs, database models, and `.specs/.steering/`.
+- Presents **3 to 5 sharp, interactive UI questions** with pre-populated options.
+- Pauses for your answers.
 
-**What the AI agent does:**
-1. **Mandatory Codebase Research**: Scans `package.json`, existing APIs, database models, and `.specs/.steering/` BEFORE asking questions.
-2. **Interactive UI Questions**: Asks **3 to 5 sharp, architectural questions** via native `ask_question` UI modals with pre-populated choices (e.g., session strategy, password hashing algorithm, rate limit window).
-3. **Mandatory Pause**: Stops and waits for your response.
+#### Step 3: Generate Specs (`@sdd-spec`)
 
----
-
-### Step 4: Generate the Complete Spec (`@sdd-spec`)
-
-Once you answer the questions, trigger Phase 2 Spec Generation:
-
+After answering the questions, trigger spec generation:
 ```text
 @sdd-spec user-authentication
 ```
+**What the Agent does automatically:**
+- Scaffolds `.specs/user-authentication/` (`00_research.md`, `01_requirements.md`, `02_design.md`, `03_tasks.md`, `04_signoff.md`).
+- Writes EARS requirements and Mermaid architecture diagrams.
+- Generates 50-100+ granular, wave-structured tasks in `03_tasks.md`.
+- Runs `npx ag-sdd linter` to verify spec quality.
 
-**What the AI agent does:**
-- Populates `00_research.md` (evaluating libraries like `jose`, `bcrypt`, `redis`).
-- Writes testable EARS requirements in `01_requirements.md` (`WHEN user submits valid credentials, THE SYSTEM SHALL issue JWT...`).
-- Generates Mermaid architecture diagrams and database ERDs in `02_design.md`.
-- Generates an uncapped, granular task breakdown in `03_tasks.md` grouped into Waves (`Wave P0 Foundation` → `Wave P1 Data` → `Wave P2 Auth Services` → `Wave P3 API Routes` → `Wave P4 Testing`).
-- Runs `npx ag-sdd linter user-authentication` to verify spec quality.
+#### Step 4: Execute Tasks (`@sdd-impl`)
 
----
-
-### Step 5: Execute Tasks Bounded & Sequentially (`@sdd-impl`)
-
-Now execute tasks **one at a time**:
-
-```bash
-# Check executable next task
-npx ag-sdd next
-
-# Begin implementing
-npx ag-sdd start user-authentication 1
-```
-
-Or simply tell your AI agent:
+To implement tasks sequentially, simply say:
 ```text
 @sdd-impl user-authentication
 ```
+**What the Agent does automatically:**
+- Runs `npx ag-sdd next` to pick the next executable task.
+- Calls `npx ag-sdd start` to activate the task.
+- Reads `_Boundary:_` declared in the task and writes code strictly within boundary files (runtime **Boundary Guard Hook** blocks any unlisted edits).
+- Runs `_Verification:_` test commands empirically.
+- Calls `npx ag-sdd complete` with structured implementation notes.
 
-**Boundary Isolation in Action:**
-- The agent reads `_Boundary:_` declared in the task (e.g., `src/auth/jwt.js`).
-- If the agent attempts to modify an unlisted file (e.g., `src/users/model.js`), the runtime system **Boundary Guard Hook** (`hooks/boundary-guard.mjs`) automatically blocks the file write and outputs JSON deny reasons.
-- After implementing, the agent runs the exact CLI command in `_Verification:_` (e.g., `npm test tests/auth.test.js`).
-- Upon passing, it logs structured implementation notes and runs `npx ag-sdd complete user-authentication 1 --note "Implemented JWT signing with RS256"`.
+#### Step 5: Final Signoff (`@sdd-signoff`)
 
----
-
-### Step 6: Final Quality Signoff (`@sdd-signoff`)
-
-When all tasks in `03_tasks.md` are marked `[x]`, run final verification:
-
+When all tasks are finished:
 ```text
 @sdd-signoff user-authentication
 ```
-
-**What happens:**
-1. Runs full project test suite (`npm test`, `npm run lint`, typecheck).
-2. Audits `git diff` against original file design boundaries.
-3. Generates `04_signoff.md` report with structured audit tables.
-
----
-
-## 🌟 Key Architectural Features
-
-- **🛡️ Deterministic System Boundary Guard (`hooks/boundary-guard.mjs`)**: System-level `PreToolUse` hook intercepts file modification tools (`write_to_file`, `replace_file_content`, `multi_replace_file_content`) and blocks unlisted file edits with standard JSON schemas.
-- **💬 7-Dimension Deep Discovery Protocol**: Scans codebase prior to asking questions. Covers Scope, Data Models, Integrations, Fault Tolerance, Auth, Performance, and UI/UX Behavior.
-- **📐 EARS Syntax Requirements (`01_requirements.md`)**: Enforces Easy Approach to Requirements Syntax (`WHEN`, `WHILE`, `WHERE`, `IF...THEN`, `THE SYSTEM SHALL`).
-- **⚡ Granular Wave Breakdown**: Vertically sliced wave structures (`P0 Foundation` → `P1 Data Models` → `P2 Repositories` → `P3 Business Logic` → `P4 APIs` → `P5 Testing`) with zero thin thinking.
-- **🤖 Specialized SDD Subagents (`.agents/agents/`)**: Pre-configured `sdd-architect`, `sdd-executor`, and `sdd-reviewer` subagents for autonomous multi-agent execution.
-- **🎛️ Interactive Mention Commands (`.agent/workflows/`)**: Native `@sdd-discovery`, `@sdd-spec`, `@sdd-impl`, `@sdd-signoff`, and `@sdd-status` workflows.
-- **🧠 Context Hygiene & Rot Prevention**: Subagents read selective slice metadata rather than dumping entire context windows on every turn.
+**What the Agent does automatically:**
+- Runs full test suite (`npm test`, lint, typecheck).
+- Audits `git diff` against design spec.
+- Populates `04_signoff.md` QA report.
 
 ---
 
-## 🎛️ Chat Mention Commands
+### 💻 Path B: The Manual CLI Path (Terminal-First Workflow)
 
-In Antigravity (AGY), Cursor, Windsurf, or IDE chat, use `@` mentions:
+If you prefer operating from the terminal or using custom scripts, you can drive the workflow manually using the `ag-sdd` CLI:
+
+```bash
+# 1. Initialize ag-sdd workspace
+npx ag-sdd init
+
+# 2. Create a new feature spec from templates
+npx ag-sdd new user-authentication
+
+# 3. View task progress matrix
+npx ag-sdd status
+
+# 4. Find the next executable task whose dependencies are met
+npx ag-sdd next
+
+# 5. Start working on task 1
+npx ag-sdd start user-authentication 1
+
+# 6. Complete task 1 and record implementation learnings
+npx ag-sdd complete user-authentication 1 --note "Implemented JWT signing with RS256"
+
+# 7. Render dependency DAG flowchart
+npx ag-sdd graph user-authentication
+
+# 8. Lint spec quality against EARS syntax
+npx ag-sdd linter user-authentication
+```
+
+---
+
+## 🏛️ Deep-Dive Explanation & System Architecture
+
+Now that you know both execution paths, here is how `ag-sdd` guarantees production-grade reliability:
+
+### 1. Deterministic System Boundary Guard (`hooks/boundary-guard.mjs`)
+A system-level `PreToolUse` hook intercepts file modification tools (`write_to_file`, `replace_file_content`, `multi_replace_file_content`). If an agent attempts to modify a file outside the task's declared `_Boundary:_`, the hook blocks the call and returns standard JSON deny schemas (`{"decision": "deny", "reason": "..."}`).
+
+### 2. EARS Syntax Requirements (`01_requirements.md`)
+All functional requirements use formal **Easy Approach to Requirements Syntax**:
+- **Ubiquitous**: The `<system>` shall `<response>`.
+- **Event-Driven**: When `<trigger>`, the `<system>` shall `<response>`.
+- **State-Driven**: While `<state>`, the `<system>` shall `<response>`.
+- **Unwanted Behavior**: If `<condition>`, then the `<system>` shall `<response>`.
+- **Optional Feature**: Where `<feature>`, the `<system>` shall `<response>`.
+
+### 3. Persistent Project Context (`.specs/.steering/`)
+To prevent re-asking settled questions across features, `ag-sdd` maintains persistent steering files:
+- `.specs/.steering/stack.md`: Technology stack decisions.
+- `.specs/.steering/conventions.md`: Code style and structural conventions.
+- `.specs/.steering/decisions.md`: Accumulated architectural decision log.
+
+### 4. Specialized Multi-Agent Personas (`.agents/agents/`)
+- **`sdd-architect`**: Pre-question codebase scan, 7-dimension ambiguity detection, EARS requirements, Mermaid diagrams, uncapped task lists.
+- **`sdd-executor`**: Bounded single-task execution, context hygiene protocol, UI task generation (`generate_image`), non-blocking test scheduling.
+- **`sdd-reviewer`**: Full test suite verification, git diff audit, requirements traceability matrix, signoff report generation.
+
+---
+
+## 🎛️ Chat Mention Commands Summary
 
 | Mention Command | SDD Phase | Action Performed |
 |---|---|---|
@@ -171,64 +165,33 @@ In Antigravity (AGY), Cursor, Windsurf, or IDE chat, use `@` mentions:
 
 ---
 
-## 💻 CLI Commands Reference
+## 💻 CLI Commands Matrix
 
-`ag-sdd` includes a zero-dependency, ultra-fast CLI engine:
-
-```bash
-ag-sdd init                             # Scaffold rules, skills, subagents, workflows, hooks
-ag-sdd init --global                    # Install @ag-sdd globally into ~/.gemini/
-ag-sdd new <feature-name>               # Scaffold a new feature spec from templates
-ag-sdd status                           # View task progress matrix across all features
-ag-sdd next                             # Display next executable task whose dependencies are satisfied
-ag-sdd start <feature> <task>           # Mark a task in-progress [/]
-ag-sdd complete <feature> <task> -n "…" # Mark task complete [x] & append implementation note
-ag-sdd active                           # Display currently active in-progress task & declared boundary
-ag-sdd reset <feature> <task>          # Reset a task back to pending [ ]
-ag-sdd graph <feature>                  # Render visual Mermaid DAG flowchart of task dependencies
-ag-sdd linter <feature>                 # Audit spec quality against EARS syntax & task completeness
-ag-sdd verify                           # Structural verification check across all specs
-ag-sdd notes                            # View accumulated implementation notes across features
-ag-sdd list                             # List all feature specs and artifact completion status
-ag-sdd help                             # Show CLI usage and command options
-```
+| CLI Command | Description |
+|---|---|
+| `ag-sdd init` | Scaffold rules, skills, subagents, workflows, hooks |
+| `ag-sdd init --global` | Install `@ag-sdd` globally into `~/.gemini/` |
+| `ag-sdd new <feature-name>` | Scaffold a new feature spec from templates |
+| `ag-sdd status` | View task progress matrix across all features |
+| `ag-sdd next` | Display next executable task whose dependencies are satisfied |
+| `ag-sdd start <feature> <task>` | Mark a task in-progress `[/]` |
+| `ag-sdd complete <feature> <task> -n "…"` | Mark task complete `[x]` & append implementation note |
+| `ag-sdd active` | Display currently active in-progress task & declared boundary |
+| `ag-sdd reset <feature> <task>` | Reset a task back to pending `[ ]` |
+| `ag-sdd graph <feature>` | Render visual Mermaid DAG flowchart of task dependencies |
+| `ag-sdd linter <feature>` | Audit spec quality against EARS syntax & task completeness |
+| `ag-sdd verify` | Structural verification check across all specs |
+| `ag-sdd notes` | View accumulated implementation notes across features |
+| `ag-sdd list` | List all feature specs and artifact completion status |
 
 ---
 
-## 📐 EARS Syntax Reference
+## 🤖 AI Ecosystem & Model Compatibility
 
-Requirements in `01_requirements.md` follow **Easy Approach to Requirements Syntax**:
-
-| Pattern | Template | Example |
-|---|---|---|
-| **Ubiquitous** | The `<system>` shall `<response>`. | The application shall log all auth events. |
-| **Event-Driven** | When `<trigger>`, the `<system>` shall `<response>`. | When a user submits credentials, the system shall validate password hash. |
-| **State-Driven** | While `<state>`, the `<system>` shall `<response>`. | While session is active, the system shall refresh access tokens. |
-| **Unwanted Behavior** | If `<condition>`, then the `<system>` shall `<response>`. | If rate limit is exceeded, then the system shall return HTTP 429. |
-| **Optional Feature** | Where `<feature>`, the `<system>` shall `<response>`. | Where OAuth is enabled, the system shall render Social Login buttons. |
-
----
-
-## 🤖 Subagent Persona Architecture
-
-`ag-sdd` equips your AI workspace with specialized subagents optimized for **Gemini 3.6 Flash / Pro**, **Claude 3.7 Opus**, **DeepSeek R1**, and **GPT-4o**:
-
-- **`sdd-architect`**: Expert software architect. Formulates non-shallow questions, drafts EARS requirements, creates Mermaid architecture diagrams, and generates uncapped task lists.
-- **`sdd-executor`**: Bounded code builder. Executes single tasks strictly within declared `_Boundary:_` file boundaries, runs empirical test commands, and logs learnings.
-- **`sdd-reviewer`**: Quality assurance auditor. Audits `git diff`, verifies full test suites, checks requirement traceability, and generates signoff reports.
-
----
-
-## 🌐 AI Ecosystem & Tool Integration
-
-`ag-sdd` seamlessly integrates with modern AI development tools:
-
-- **Google Antigravity (AGY 2.0)**: Native support for slash commands, workflows, hooks, subagents, and sidecars.
-- **Model Context Protocol (MCP)**: Works alongside MCP servers for search, database inspection, and API testing.
-- **`generate_image`**: Automatically used during design phase for UI wireframes and visual asset creation.
-- **`search_web`**: Used during research phase for library evaluations and prior art comparisons.
-- **`schedule`**: Used for non-blocking timers on long-running test suites.
-- **`ask_question`**: Used for multi-select, interactive clarification interviews.
+`ag-sdd` is tested and optimized for:
+- **Models**: Gemini 3.6 Flash / Pro, Claude 3.7 Opus, DeepSeek R1 / V3, GPT-4o
+- **Platforms**: Google Antigravity (AGY 2.0), Cursor, Windsurf, Kiro IDE, Devin, Cline, Roo Code
+- **Protocols**: Model Context Protocol (MCP), Native Hooks, Skills Architecture
 
 ---
 

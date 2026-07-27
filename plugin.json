@@ -1,0 +1,5 @@
+{
+  "name": "ag-sdd",
+  "description": "Spec-Driven Development (SDD) Workflow Harness and Skill Suite for Google Antigravity (AGY), Gemini 3.6, Claude Opus, DeepSeek R1, & Cursor/Windsurf agents.",
+  "version": "0.2.0"
+}

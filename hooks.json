@@ -1,0 +1,17 @@
+{
+  "ag-sdd-boundary-guard": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": "(write_to_file|replace_file_content|multi_replace_file_content)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"./hooks/boundary-guard.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
