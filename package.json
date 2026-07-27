@@ -1,7 +1,7 @@
 {
   "name": "ag-sdd",
   "version": "0.2.0",
-  "description": "Spec-Driven Development (SDD) workflow harness and skill suite built specifically for Anti-Gravity.",
+  "description": "Production-grade Spec-Driven Development (SDD) harness & skill suite for Google Antigravity (AGY), Gemini 3.6, Claude Opus, DeepSeek R1, & Cursor/Windsurf agents.",
   "type": "module",
   "bin": {
     "ag-sdd": "bin/cli.mjs"
@@ -14,15 +14,33 @@
   },
   "keywords": [
     "anti-gravity",
+    "antigravity",
+    "google-antigravity",
+    "agy",
     "sdd",
     "spec-driven-development",
-    "agentic",
+    "cc-sdd",
+    "kiro-ide",
+    "cursor",
+    "windsurf",
+    "devin",
+    "gemini-flash",
+    "gemini-pro",
+    "claude-opus",
+    "deepseek-r1",
+    "gpt-4o",
+    "agentic-ai",
     "ai-workflow",
     "code-generation",
     "task-decomposition",
     "boundary-isolation",
     "clarification-gate",
-    "context-propagation"
+    "context-propagation",
+    "ears-requirements",
+    "mcp",
+    "model-context-protocol",
+    "autonomous-coding",
+    "pair-programming"
   ],
   "author": "AG-SDD Contributors",
   "license": "MIT",
@@ -30,6 +48,10 @@
     "type": "git",
     "url": "git+https://github.com/stormlive-ai/ag-sdd.git"
   },
+  "bugs": {
+    "url": "https://github.com/stormlive-ai/ag-sdd/issues"
+  },
+  "homepage": "https://github.com/stormlive-ai/ag-sdd#readme",
   "engines": {
     "node": ">=18.0.0"
   },
