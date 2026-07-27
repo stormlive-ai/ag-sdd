@@ -4,8 +4,11 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { fileURLToPath } from 'node:url';
 
-const CLI_PATH = path.resolve(import.meta.dirname, '..', 'bin', 'cli.mjs');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const CLI_PATH = path.resolve(__dirname, '..', 'bin', 'cli.mjs');
 
 function runCli(args = [], cwd = undefined) {
   try {

@@ -4,8 +4,11 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { fileURLToPath } from 'node:url';
 
-const GUARD_PATH = path.resolve(import.meta.dirname, '..', 'hooks', 'boundary-guard.mjs');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const GUARD_PATH = path.resolve(__dirname, '..', 'hooks', 'boundary-guard.mjs');
 
 function runGuard(hookType, input, cwd) {
   try {
