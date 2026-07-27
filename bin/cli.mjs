@@ -380,7 +380,7 @@ function getFeatures() {
   if (!fs.existsSync(specsDir)) {
     return [];
   }
-  return fs.readdirSync(specsDir).filter(f => fs.statSync(path.join(specsDir, f)).isDirectory());
+  return fs.readdirSync(specsDir).filter(f => !f.startsWith('.') && fs.statSync(path.join(specsDir, f)).isDirectory());
 }
 
 function cmdStatus() {
