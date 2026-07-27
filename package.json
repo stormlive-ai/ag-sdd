@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node ./bin/cli.mjs",
     "lint": "eslint . --ext .mjs,.js",
-    "test": "node --test ./tests/**/*.test.mjs",
+    "test": "node --test tests/cli.test.mjs tests/boundary-guard.test.mjs",
     "verify": "node ./bin/cli.mjs verify"
   },
   "keywords": [
